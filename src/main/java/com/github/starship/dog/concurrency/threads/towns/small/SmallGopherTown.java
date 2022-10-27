@@ -10,6 +10,7 @@ import com.github.starship.dog.concurrency.threads.api.projects.Goods;
 import com.github.starship.dog.concurrency.threads.api.projects.GoodsProduction;
 import com.github.starship.dog.concurrency.threads.api.projects.drug.SuperProject;
 import com.github.starship.dog.concurrency.threads.api.projects.unicorn.UnicornProject;
+import com.github.starship.dog.concurrency.threads.toolbox.GopherThread;
 import com.github.starship.dog.concurrency.threads.towns.AnyGopherTown;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +52,8 @@ public class SmallGopherTown extends AnyGopherTown {
                 // создаем задачу для исполнения запроса и выполняем ее
                 final EquipExpedition equipExpedition = new EquipExpedition(connection);
                 // TODO Исполни задачу
+                final Thread thread = new GopherThread(equipExpedition);
+                thread.start();
 
             } catch (Throwable equipExpeditionException) {
                 log.error("Не удалось создать и исполнить проект!", equipExpeditionException);
