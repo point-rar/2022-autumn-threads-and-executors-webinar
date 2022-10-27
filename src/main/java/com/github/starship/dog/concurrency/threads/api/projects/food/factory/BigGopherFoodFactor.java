@@ -3,6 +3,7 @@ package com.github.starship.dog.concurrency.threads.api.projects.food.factory;
 import com.github.starship.dog.concurrency.threads.api.Package;
 import com.github.starship.dog.concurrency.threads.api.projects.food.Food;
 import com.github.starship.dog.concurrency.threads.toolbox.ThreadAPI;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.UUID;
@@ -10,6 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
+@RequiredArgsConstructor
 public class BigGopherFoodFactor implements FoodFactory {
 
     private final static String[] DISHES = {
@@ -18,11 +20,13 @@ public class BigGopherFoodFactor implements FoodFactory {
 
     private final static String FACTORY_TAG = "#factory("+ UUID.randomUUID() +")";
 
+    private final boolean isBroken;
+
     @Override
     public Package<Food> cookAndPackage(long quantity) {
         final int localRequestKPI = ThreadLocalRandom.current().nextInt(3);
 
-        if(localRequestKPI <= 1) {
+        if(isBroken) {
             log.error("KPI фабрики {} слишком низкий для производства еды - все равно не успеем :(", FACTORY_TAG);
             throw new RuntimeException();
         }

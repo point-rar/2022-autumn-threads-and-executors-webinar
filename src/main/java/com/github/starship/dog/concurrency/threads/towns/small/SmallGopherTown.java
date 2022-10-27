@@ -51,10 +51,8 @@ public class SmallGopherTown extends AnyGopherTown {
 
                 // создаем задачу для исполнения запроса и выполняем ее
                 final EquipExpedition equipExpedition = new EquipExpedition(connection);
-                // TODO Исполни задачу
-                final Thread thread = new GopherThread(equipExpedition);
+                Thread thread = new GopherThread(equipExpedition);
                 thread.start();
-
             } catch (Throwable equipExpeditionException) {
                 log.error("Не удалось создать и исполнить проект!", equipExpeditionException);
             }

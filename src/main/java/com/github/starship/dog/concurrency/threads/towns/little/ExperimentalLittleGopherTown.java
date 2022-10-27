@@ -43,7 +43,7 @@ public class ExperimentalLittleGopherTown extends AnyGopherTown {
 
     // пул потоков, в котором мы будем исполнять наши запросы
     private final Executor executor
-            = new PokerFacePool(10);
+            = new GopherThreadPool(10);
 
     public synchronized void start() throws Exception {
         // thread-safe

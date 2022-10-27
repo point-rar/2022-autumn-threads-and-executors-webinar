@@ -17,7 +17,7 @@ public class НадоМногоЕдинорогов extends Simulation {
     private final static int USERS = 10;
     private final static int REPEATS = 1000;
     private final static int PAUSE_SHIFT = 10;
-    private final static int REQUEST_TIMEOUT = 180000;
+    private final static int REQUEST_TIMEOUT = 2000;
 
     {
         final String requestBody = "{ \"projectName\" : \"unicorns\", \"justification\" : \"\", \"quantity\" : 100 }";

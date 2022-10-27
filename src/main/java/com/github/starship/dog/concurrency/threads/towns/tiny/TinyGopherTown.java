@@ -49,7 +49,6 @@ public class TinyGopherTown extends AnyGopherTown {
 
             // создаем задачу для исполнения запроса и выполняем ее
             final EquipExpedition equipExpedition = new EquipExpedition(connection);
-            //  Исполни задание
             equipExpedition.run();
         }
     }

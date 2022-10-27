@@ -1,4 +1,4 @@
-package com.github.starship.dog.concurrency.threads.towns.medium;
+package com.github.starship.dog.concurrency.threads.towns.large;
 
 import com.github.starship.dog.concurrency.threads.api.ExpeditionRequest;
 import com.github.starship.dog.concurrency.threads.api.Package;
@@ -29,8 +29,7 @@ import java.util.concurrent.*;
  * Задание: нам нужно ограничить время работы приемной комиссии определенным сроком исполнения!
  */
 @Slf4j
-@RequiredArgsConstructor
-public class MediumGopherTown extends AnyGopherTown implements AutoCloseable {
+public class LargeGopherTown extends AnyGopherTown implements AutoCloseable {
 
     // порт по которому город Гоферов готов принимать запросы
     private final static int TOWN_ACCEPT_PORT = 8080;
@@ -52,40 +51,66 @@ public class MediumGopherTown extends AnyGopherTown implements AutoCloseable {
     private final ExecutorService workingHoursExecutor
             = Executors.newSingleThreadExecutor();
 
+    // пул мониторинга длины очереди
+    private final ScheduledExecutorService monitoringScheduler
+            = Executors.newScheduledThreadPool(1);
+
     // время работы городка
     private final long workingTime;
     private final TimeUnit workingTimeUnit;
 
+    public LargeGopherTown(long workingTime, TimeUnit workingTimeUnit) {
+        this.workingTime = workingTime;
+        this.workingTimeUnit = workingTimeUnit;
+
+        initMonitoring();
+    }
+
+    private void initMonitoring() {
+        final Runnable monitoringTask = () -> {
+            final ThreadPoolExecutor executor = (ThreadPoolExecutor) requestHandleExecutor;
+            long activeTaskCount = executor.getTaskCount() - executor.getCompletedTaskCount();
+
+            if (activeTaskCount < 10) {
+                log.info("Запросов не очень много, бурунлуки могут спать спокойно { active task count = {} }", activeTaskCount);
+            } else if (activeTaskCount < 100) {
+                log.info("Обычный рабочий день { active task count = {} }", activeTaskCount);
+            } else {
+                log.info("Авраааааал! Куча задач ничего не успеваем!! { active task count = {} }", activeTaskCount);
+            }
+        };
+
+        monitoringScheduler.scheduleAtFixedRate(monitoringTask, 0, 1, TimeUnit.MINUTES);
+    }
+
     public synchronized void start() throws Exception {
+        workingHours();
+
         try (
                 final ServerSocketChannel channel = ServerSocketChannel.open();
+                final ServerSocket socket = channel.bind(new InetSocketAddress(TOWN_ACCEPT_PORT)).socket();
                 final ExecutorService service = Executors.newSingleThreadExecutor()
         ) {
-            setWorkingHours();
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    // открываем канал связи
+                    final Socket connection = socket.accept();
 
-            channel.bind(new InetSocketAddress(TOWN_ACCEPT_PORT));
-            try (final ServerSocket socket = channel.socket()) {
-                while (!Thread.currentThread().isInterrupted()) {
-                    try {
-                        // открываем канал связи
-                        final Socket connection = socket.accept();
+                    service.submit(() -> {
+                        final ExpeditionRequest expeditionRequest = handleConnection(connection);
 
-                        service.submit(() -> {
-                            final ExpeditionRequest expeditionRequest = handleConnection(connection);
-
-                            // создаем задачу для исполнения запроса и выполняем ее
-                            EquipExpedition expedition = new EquipExpedition(expeditionRequest);
-                            requestHandleExecutor.execute(expedition);
-                        });
-                    } catch (Throwable equipExpeditionException) {
-                        log.error("Не удалось создать и исполнить проект!", equipExpeditionException);
-                    }
+                        // создаем задачу для исполнения запроса и выполняем ее
+                        EquipExpedition expedition = new EquipExpedition(expeditionRequest);
+                        requestHandleExecutor.execute(expedition);
+                    });
+                } catch (Throwable equipExpeditionException) {
+                    log.error("Не удалось создать и исполнить проект!", equipExpeditionException);
                 }
             }
         }
     }
 
-    private void setWorkingHours() {
+    private void workingHours() {
         // время начала работы
         final long start = System.nanoTime();
 
@@ -118,6 +143,7 @@ public class MediumGopherTown extends AnyGopherTown implements AutoCloseable {
     public void close() throws Exception {
         requestHandleExecutor.shutdown();
         workingHoursExecutor.shutdown();
+        monitoringScheduler.shutdown();
     }
 
     @RequiredArgsConstructor

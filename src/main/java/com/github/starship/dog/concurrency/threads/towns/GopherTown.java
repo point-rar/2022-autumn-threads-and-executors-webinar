@@ -1,6 +1,6 @@
 package com.github.starship.dog.concurrency.threads.towns;
 
-public interface GopherTown {
+public interface GopherTown extends AutoCloseable {
 
     /**
      * Городок с антропоморфными бурундуками (Гоферами), который должен снаряжать экспедиции для свих собратьев на Марсе
@@ -18,4 +18,7 @@ public interface GopherTown {
      * @throws Exception если вдруг на город бурундуков упадет метеорит :'(
      */
     void start() throws Exception;
+
+    @Override
+    default void close() throws Exception {}
 }
