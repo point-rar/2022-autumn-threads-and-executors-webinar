@@ -17,6 +17,13 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * Крошечный город - в нем все течет не спешно! Все процессы тут еще не устаканены, а каждый бурундук не верит в этих,
+ * так называемых, покорителей Марса...
+ *
+ * <p>
+ * Задание: нам потребуется последовательно исполнять приходящие запросы с Марса
+ */
 @Slf4j
 public class TinyGopherTown extends AnyGopherTown {
 
@@ -32,11 +39,6 @@ public class TinyGopherTown extends AnyGopherTown {
     private final BoardOfDirectors boardOfDirectors = new MarsExpeditionBoardOfGophers(
             new SuperProject(), new UnicornProject());
 
-    /**
-     * Запускаем приемную комиссию по сбору и выпуска заявок для потребностей экспедиции
-     *
-     * Вопрос: Как можно оптимизировать исполнение данной программы, чтобы ускорить сбор экспедиции?
-     */
     public synchronized void start() throws Exception {
         // thread-safe
         final ServerSocket socket = new ServerSocket(TOWN_ACCEPT_PORT);
@@ -47,7 +49,7 @@ public class TinyGopherTown extends AnyGopherTown {
 
             // создаем задачу для исполнения запроса и выполняем ее
             final EquipExpedition equipExpedition = new EquipExpedition(connection);
-            equipExpedition.run();
+            // TODO Исполни задание
         }
     }
 
