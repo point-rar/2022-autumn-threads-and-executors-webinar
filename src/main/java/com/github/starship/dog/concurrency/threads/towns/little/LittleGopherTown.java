@@ -17,17 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-/**
- * Маленький город - в небольших городках уже появляются процессы, и ценят некоторую упорядоченность и распределение! Правда
- * делают они это не очень хорошо, но кто мы чтобы судить бурундуков...
- *
- * <p>
- * Задание: нам потребуется реализовать пулы обработчиков запросов, который будет иметь фиксированный набор бурундуков (потоков)
- * и уметь обрабатывать сообщения параллельно друг от друга!
- */
 @Slf4j
-public class ExperimentalLittleGopherTown extends AnyGopherTown {
+public class LittleGopherTown extends AnyGopherTown {
 
     // порт по которому город Гоферов готов принимать запросы
     private final static int TOWN_ACCEPT_PORT = 8080;
@@ -48,16 +42,21 @@ public class ExperimentalLittleGopherTown extends AnyGopherTown {
     public synchronized void start() throws Exception {
         // thread-safe
         final ServerSocket socket = new ServerSocket(TOWN_ACCEPT_PORT);
+        // Поток исполняющий принятие запроса и отправляющий отбивку
+        final ExecutorService service = Executors.newSingleThreadExecutor();
 
         while (true) {
             try {
                 // открываем канал связи
                 final Socket connection = socket.accept();
 
-                // создаем задачу для исполнения запроса и выполняем ее
-                EquipExpedition expedition = new EquipExpedition(connection);
-                executor.execute(expedition);
+                service.submit(() -> {
+                    final ExpeditionRequest expeditionRequest = handleConnection(connection);
 
+                    // создаем задачу для исполнения запроса и выполняем ее
+                    EquipExpedition expedition = new EquipExpedition(expeditionRequest);
+                    executor.execute(expedition);
+                });
             } catch (Throwable equipExpeditionException) {
                 log.error("Не удалось создать и исполнить проект!", equipExpeditionException);
             }
@@ -67,21 +66,18 @@ public class ExperimentalLittleGopherTown extends AnyGopherTown {
     @RequiredArgsConstructor
     public class EquipExpedition implements Runnable {
         // сокет для чтения данных
-        private final Socket connection;
+        private final ExpeditionRequest expeditionRequest;
 
         @Override
         public void run() {
             try {
-                // 1. Обработаем запрос от экспедиции
-                final ExpeditionRequest expeditionRequest = handleConnection(connection);
-
-                // 2. Отправимся в совет директоров экспедиции и согласуем разработку и поставку нужд экспедиции
+                // 1. Отправимся в совет директоров экспедиции и согласуем разработку и поставку нужд экспедиции
                 GoodsProduction<Goods> goodsProduction = boardOfDirectors.acceptNeeds(expeditionRequest);
 
-                // 3. Производство
+                // 2. Производство
                 Package<Goods> packageOfGoods = production(goodsProduction);
 
-                // 4. Снарядим экспедицию
+                // 3. Снарядим экспедицию
                 expedition.equip(packageOfGoods);
             } catch (Throwable expeditionRequestException) {
                 log.error("Не удалось создать и исполнить проект!", expeditionRequestException);
