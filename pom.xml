@@ -1,143 +1,207 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.github.starship.dog</groupId>
-  <artifactId>concurrency-threads</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+    <groupId>com.github.starship.dog</groupId>
+    <artifactId>concurrency-threads</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
 
-  <name>Concurrency. Threads</name>
+    <name>Concurrency. Threads</name>
 
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-  <issueManagement>
-    <url>https://github.com/starship-dog/concurrency/issues</url>
-    <system>GitHub Issues</system>
-  </issueManagement>
+    <issueManagement>
+        <url>https://github.com/starship-dog/concurrency/issues</url>
+        <system>GitHub Issues</system>
+    </issueManagement>
 
-  <scm>
-    <url>https://github.com/starship-dog/concurrency</url>
-    <connection>scm:git:git://github.com/starship-dog/concurrency.git</connection>
-    <developerConnection>scm:git:git@github.com:ekgreen/concurrency.git</developerConnection>
-  </scm>
+    <scm>
+        <url>https://github.com/starship-dog/concurrency</url>
+        <connection>scm:git:git://github.com/starship-dog/concurrency.git</connection>
+        <developerConnection>scm:git:git@github.com:ekgreen/concurrency.git</developerConnection>
+    </scm>
 
-  <developers>
-    <developer>
-      <email>rgizmalkov.dev@gmail.com</email>
-      <name>Izmalkov Roman</name>
-      <url>https://github.com/starship-dog</url>
-      <id>starship-dog</id>
-    </developer>
-  </developers>
+    <developers>
+        <developer>
+            <email>rgizmalkov.dev@gmail.com</email>
+            <name>Izmalkov Roman</name>
+            <url>https://github.com/starship-dog</url>
+            <id>starship-dog</id>
+        </developer>
+    </developers>
 
-  <properties>
-    <!-- build properties-->
-    <java.source>19</java.source>
-    <java.target>19</java.target>
-    <maven.compile.plugin>3.10.0</maven.compile.plugin>
+    <properties>
+        <!-- build properties-->
+        <java.source>19</java.source>
+        <java.target>19</java.target>
+        <maven.compile.plugin>3.10.0</maven.compile.plugin>
 
-    <!-- libraries -->
-    <guava.version>31.1-jre</guava.version>
-    <commons.io.version>2.11.0</commons.io.version>
-    <jetbrains.annotations.version>23.0.0</jetbrains.annotations.version>
+        <!-- libraries -->
+        <guava.version>31.1-jre</guava.version>
+        <commons.io.version>2.11.0</commons.io.version>
+        <jetbrains.annotations.version>23.0.0</jetbrains.annotations.version>
 
-  </properties>
+        <!-- tests -->
+        <gatling.version>3.8.4</gatling.version>
+    </properties>
 
-  <dependencyManagement>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <!-- Import dependency management from Spring Boot -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>2.6.4</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
-      <dependency>
-        <!-- Import dependency management from Spring Boot -->
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>2.6.4</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons.io.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>${jetbrains.annotations.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.gatling</groupId>
+            <artifactId>gatling-core</artifactId>
+            <version>${gatling.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.gatling</groupId>
+            <artifactId>gatling-http</artifactId>
+            <version>${gatling.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.gatling</groupId>
+            <artifactId>gatling-charts</artifactId>
+            <scope>runtime</scope>
+            <version>${gatling.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.gatling</groupId>
+            <artifactId>gatling-metrics</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.gatling.highcharts</groupId>
+            <artifactId>gatling-charts-highcharts</artifactId>
+            <scope>runtime</scope>
+            <version>${gatling.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.gatling</groupId>
+            <artifactId>gatling-app</artifactId>
+            <version>${gatling.version}</version>
+        </dependency>
     </dependencies>
-  </dependencyManagement>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>${guava.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>${commons.io.version}</version>
-    </dependency>
+    <build>
+        <plugins>
 
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-core</artifactId>
-    </dependency>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compile.plugin}</version>
+                <configuration>
+                    <source>${java.source}</source>
+                    <target>${java.target}</target>
+                </configuration>
+            </plugin>
 
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-    </dependency>
+        </plugins>
+    </build>
 
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jetbrains</groupId>
-      <artifactId>annotations</artifactId>
-      <version>${jetbrains.annotations.version}</version>
-    </dependency>
-  </dependencies>
-
-  <build>
-    <plugins>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${maven.compile.plugin}</version>
-        <configuration>
-          <source>${java.source}</source>
-          <target>${java.target}</target>
-        </configuration>
-      </plugin>
-
-    </plugins>
-  </build>
+    <profiles>
+        <profile>
+            <id>unicorns</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.gatling</groupId>
+                        <artifactId>gatling-maven-plugin</artifactId>
+                        <version>4.2.7</version>
+                        <configuration>
+                            <simulationsFolder>src/main/test/java</simulationsFolder>
+                            <runMultipleSimulations>false</runMultipleSimulations>
+                            <simulationClass>com.github.starship.dog.concurrency.threads.НадоМногоЕдинорогов</simulationClass>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>run-on-test</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 
 </project>
